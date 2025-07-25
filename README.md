@@ -77,6 +77,18 @@ This starts packet capture across all interfaces (-i any) and saves all packets 
 python3 real_dns_simulator.py --duration 60 --failure-rate 0.5
 ```
 Sends a mix of DoH, DoT, DoQ, and plaintext DNS queries for 60 seconds.
+
 50% of encrypted queries will intentionally fail to trigger fallback behavior.
 
 ---
+
+### 2️⃣ Stop both commands after the simulation completes.
+### 3️⃣ Analyze the Capture
+
+```bash
+python3 improved_dns_detector.py real_test.pcapng --doh-domains doh-domains_overall.txt --doh-ipv4 doh-ipv4.txt
+```
+This parses the .pcapng and detects downgrade patterns:
+- Secure DNS attempt (DoH/DoT/DoQ)
+- Followed by plaintext DNS to same domain
+- Within a 5s time window
