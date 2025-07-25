@@ -5,7 +5,7 @@ This project helps uncover real-world security regressions often missed by exist
 
 ## 🚨 Why It Matters
 
-Modern browsers and operating systems use **encrypted DNS protocols** (DNS-over-HTTPS, DNS-over-TLS, DNS-over-QUIC) to protect user privacy. But when these fail—due to censorship, misconfiguration, or filtering—they silently fall back to **insecure plaintext DNS**, leaving users exposed without any warning.
+Modern browsers and operating systems use **encrypted DNS protocols** (DNS-over-HTTPS, DNS-over-TLS, DNS-over-QUIC) to protect user privacy. But when these fail-due to censorship, misconfiguration, or filtering-they silently fall back to **insecure plaintext DNS**, leaving users exposed without any warning.
 
 This downgrade can enable:
 - DNS **eavesdropping** and **traffic analysis** by attackers or ISPs
