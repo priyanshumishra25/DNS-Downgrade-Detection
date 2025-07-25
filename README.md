@@ -82,8 +82,7 @@ Sends a mix of DoH, DoT, DoQ, and plaintext DNS queries for 60 seconds.
 
 ---
 
-### 2️⃣ Stop both commands after the simulation completes.
-### 3️⃣ Analyze the Capture
+### 2️⃣ Analyze the Capture
 
 ```bash
 python3 improved_dns_detector.py real_test.pcapng --doh-domains doh-domains_overall.txt --doh-ipv4 doh-ipv4.txt
@@ -92,3 +91,20 @@ This parses the .pcapng and detects downgrade patterns:
 - Secure DNS attempt (DoH/DoT/DoQ)
 - Followed by plaintext DNS to same domain
 - Within a 5s time window
+
+---
+
+## Example Output
+```json
+[
+  {
+    "timestamp": "2025-07-25 02:07:53.136",
+    "src_ip": "172.24.128.101",
+    "encrypted_type": "DoQ",
+    "encrypted_server": "8.8.8.8",
+    "plaintext_query": "www.google.com",
+    "plaintext_server": "172.24.0.1",
+    "time_to_fallback": "0.295s"
+  }
+]
+```
