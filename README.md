@@ -1,32 +1,50 @@
 # 🔐 DNS Downgrade Detector
 
-A Python-based tool for detecting silent fallbacks from encrypted DNS protocols (DoH, DoT, DoQ) to plaintext DNS.  
-This project helps uncover real-world security regressions often missed by existing monitoring tools.
-
-## 🚨 Why It Matters
-
-Modern browsers and operating systems use **encrypted DNS protocols** (DNS-over-HTTPS, DNS-over-TLS, DNS-over-QUIC) to protect user privacy. But when these fail-due to censorship, misconfiguration, or filtering-they silently fall back to **insecure plaintext DNS**, leaving users exposed without any warning.
-
-This downgrade can enable:
-- DNS **eavesdropping** and **traffic analysis** by attackers or ISPs
-- **DNS hijacking** or **spoofing** for phishing or surveillance
-- **Loss of compliance** with enterprise privacy policies
+A cybersecurity-focused Python tool to detect **silent fallbacks from encrypted DNS protocols** (DoH, DoT, DoQ) to **plaintext DNS**.  
+It helps analysts and engineers uncover **covert security regressions** in modern DNS behavior that are invisible to most monitoring systems.
 
 ---
 
-## 🛠️ What This Tool Does
+## 🚨 Why This Matters
 
-✅ Parses `.pcapng` network captures
+Modern systems increasingly rely on encrypted DNS protocols (like **DoH**, **DoT**, **DoQ**) to protect user privacy and prevent DNS hijacking.
 
-✅ Detects DNS-over-HTTPS (DoH), DNS-over-TLS (DoT), and DNS-over-QUIC (DoQ)
+But when these encrypted protocols fail—due to censorship, misconfig, firewalls, or network filtering—**clients silently fall back to plaintext DNS**, exposing queries to attackers, ISPs, or surveillance entities. These downgrades are rarely detected.
 
-✅ Identifies **downgrade events**: when secure DNS fails and is followed by a plaintext query to the same domain
-
-✅ Outputs structured reports in JSON/CSV
-
-✅ Includes a traffic simulator for generating realistic downgrade scenarios
+This tool aims to close that visibility gap.
 
 ---
+
+## 🛠️ What It Does
+
+- ✅ Analyzes `.pcapng` files (via PyShark/TShark)
+- ✅ Detects DNS-over-HTTPS (DoH), DNS-over-TLS (DoT), DNS-over-QUIC (DoQ)
+- ✅ Identifies fallback events where a failed secure DNS query is followed by a plaintext DNS query to the **same domain**
+- ✅ Produces structured reports (`JSON` / `CSV`)
+- ✅ Includes a test traffic simulator for controlled experiments
+
+---
+
+## 📁 Example Files
+
+- [`complete_dns.pcapng`](./complete_dns.pcapng) — Real trace with encrypted DNS and fallbacks  
+- [`complete_dns_fallback_analysis.json`](./complete_dns_fallback_analysis.json) — Example output report
+
+> ✅ Detected 31 downgrade events in a ~1900-packet trace  
+> 🔍 Included DNS providers: Cloudflare, Google, Quad9, AdGuard
+
+---
+
+## 📦 Requirements
+
+Listed in [`requirements.txt`](./requirements.txt):
+
+```txt
+pyshark>=0.6
+requests>=2.31.0
+scapy>=2.5.0
+dnspython>=2.4.0
+```
 
 ## 📦 Project Structure
 ├── dns_fallback_detector.py.py # Main detection engine
