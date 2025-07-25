@@ -45,6 +45,7 @@ requests>=2.31.0
 scapy>=2.5.0
 dnspython>=2.4.0
 ```
+---
 
 ## 📦 Project Structure
 ├── dns_fallback_detector.py.py # Main detection engine
@@ -56,4 +57,14 @@ dnspython>=2.4.0
 ├── doh-ipv4.txt # Known DoH/DoT IPv4 addresses
 
 ├── doh-ipv6.txt # Known DoH/DoT IPv6 addresses
+---
 
+## 🛠️ What It Does
+
+- ✅ Analyzes `.pcapng` files (via PyShark/TShark)
+- ✅ Detects DNS-over-HTTPS (DoH), DNS-over-TLS (DoT), DNS-over-QUIC (DoQ)
+- ✅ Identifies fallback events where a failed secure DNS query is followed by a plaintext DNS query to the **same domain**
+- ✅ Produces structured reports (`JSON` / `CSV`)
+- ✅ Includes a test traffic simulator for controlled experiments
+
+---
