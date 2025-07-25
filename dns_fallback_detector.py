@@ -39,11 +39,11 @@ class DNSFallbackDetectorWithLists:
         }
         
         # Load DoH server lists from files
-        self.doh_providers = self.load_list_from_file(doh_domains_file)
+        self.doh_providers = self.load_list_from_file(doh_domains_file, [])
         
-        self.doh_ipv4 = self.load_list_from_file(doh_ipv4_file)
+        self.doh_ipv4 = self.load_list_from_file(doh_ipv4_file, [])
         
-        self.doh_ipv6 = self.load_list_from_file(doh_ipv6_file)
+        self.doh_ipv6 = self.load_list_from_file(doh_ipv6_file, [])
         
         # Combine all IPs for easy checking
         self.doh_ips = set(self.doh_ipv4 + self.doh_ipv6)
