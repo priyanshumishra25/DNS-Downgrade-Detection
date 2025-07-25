@@ -17,9 +17,13 @@ This downgrade can enable:
 ## 🛠️ What This Tool Does
 
 ✅ Parses `.pcapng` network captures
+
 ✅ Detects DNS-over-HTTPS (DoH), DNS-over-TLS (DoT), and DNS-over-QUIC (DoQ)
+
 ✅ Identifies **downgrade events**: when secure DNS fails and is followed by a plaintext query to the same domain
+
 ✅ Outputs structured reports in JSON/CSV
+
 ✅ Includes a traffic simulator for generating realistic downgrade scenarios
 
 ---
