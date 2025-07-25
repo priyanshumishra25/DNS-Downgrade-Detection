@@ -106,3 +106,11 @@ This parses the .pcapng and detects downgrade patterns:
   }
 ]
 ```
+
+---
+
+## 📚 Future Ideas
+- Live mode using pyshark.LiveCapture or scapy
+- Real-time alerting (Slack/email webhook)
+- SIEM export (ELK/Splunk CSV)
+- Add fingerprinting for proxy/obfuscation-based DoH bypass
