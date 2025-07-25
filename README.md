@@ -57,14 +57,26 @@ dnspython>=2.4.0
 ├── doh-ipv4.txt # Known DoH/DoT IPv4 addresses
 
 ├── doh-ipv6.txt # Known DoH/DoT IPv6 addresses
+
 ---
 
-## 🛠️ What It Does
+## 🧪 TL;DR: How to Run a Full Test
 
-- ✅ Analyzes `.pcapng` files (via PyShark/TShark)
-- ✅ Detects DNS-over-HTTPS (DoH), DNS-over-TLS (DoT), DNS-over-QUIC (DoQ)
-- ✅ Identifies fallback events where a failed secure DNS query is followed by a plaintext DNS query to the **same domain**
-- ✅ Produces structured reports (`JSON` / `CSV`)
-- ✅ Includes a test traffic simulator for controlled experiments
+### 1️⃣ Split your terminal into two panes
+
+#### Left pane: Capture traffic
+
+```bash
+sudo tcpdump -i any -w real_test.pcapng -s 0
+```
+This starts packet capture across all interfaces (-i any) and saves all packets (-s 0) into a file.
+
+#### Right pane: Simulate DNS traffic with downgrades
+
+```bash
+python3 real_dns_simulator.py --duration 60 --failure-rate 0.5
+```
+Sends a mix of DoH, DoT, DoQ, and plaintext DNS queries for 60 seconds.
+50% of encrypted queries will intentionally fail to trigger fallback behavior.
 
 ---
