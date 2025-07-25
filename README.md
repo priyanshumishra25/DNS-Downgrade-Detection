@@ -80,8 +80,6 @@ Sends a mix of DoH, DoT, DoQ, and plaintext DNS queries for 60 seconds.
 
 50% of encrypted queries will intentionally fail to trigger fallback behavior.
 
----
-
 ### 2️⃣ Analyze the Capture
 
 ```bash
