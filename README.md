@@ -25,8 +25,13 @@ This downgrade can enable:
 ---
 
 ## 📦 Project Structure
-├── improved_dns_detector.py # Main detection engine
+├── dns_fallback_detector.py.py # Main detection engine
+
 ├── real_dns_simulator.py # Script to simulate real DNS downgrade traffic
+
 ├── doh-domains_overall.txt # Known DoH domains
+
 ├── doh-ipv4.txt # Known DoH/DoT IPv4 addresses
+
 ├── doh-ipv6.txt # Known DoH/DoT IPv6 addresses
+
