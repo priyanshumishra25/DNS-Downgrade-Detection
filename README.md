@@ -27,10 +27,10 @@ This tool aims to close that visibility gap.
 
 ## 📁 Example Files
 
-- [`complete_dns.pcapng`](Example/complete_dns.pcapng) — Real trace with encrypted DNS and fallbacks  
-- [`complete_dns_fallback_analysis.json`](Example/complete_dns_fallback_analysis.json) — Example output report
+- [`complete_dns.pcapng`](Example/capture.pcapng) — Real trace with encrypted DNS and fallbacks  
+- [`complete_dns_fallback_analysis.json`](Example/capture_fallback_analysis.json) — Example output report
 
-> ✅ Detected 31 downgrade events in a ~1900-packet trace  
+> ✅ Detected 41 downgrade events in a 2364-packet trace  
 > 🔍 Included DNS providers: Cloudflare, Google, Quad9, AdGuard
 
 ---
