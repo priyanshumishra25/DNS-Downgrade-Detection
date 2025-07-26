@@ -91,76 +91,62 @@ class DNSFallbackDetectorWithLists:
             print(f"[DEBUG] {message}")
     
     def is_doh_traffic(self, packet):
-        """Enhanced DoH detection using loaded lists"""
+        """Enhanced DoH detection - outbound only, SNI-based"""
         try:
-            # Must be TCP on port 443
-            if not ('TCP' in packet and hasattr(packet, 'tcp')):
+            # Must have TCP and TLS layers
+            if not (hasattr(packet, 'tcp') and hasattr(packet, 'tls')):
                 return False
                 
-            # Check port
+            # Only check outbound traffic (destination port 443)
             dst_port = getattr(packet.tcp, 'dstport', None)
-            src_port = getattr(packet.tcp, 'srcport', None)
-            
-            if dst_port != '443' and src_port != '443':
+            if dst_port != '443':
                 return False
             
-            # Check IP addresses (both IPv4 and IPv6)
-            if hasattr(packet, 'ip'):
-                dst_ip = getattr(packet.ip, 'dst', None)
-                src_ip = getattr(packet.ip, 'src', None)
-                
-                # Check against known DoH IPs
-                if dst_ip in self.doh_ips or src_ip in self.doh_ips:
-                    self.debug_print(f"DoH detected by IP: {dst_ip or src_ip}")
-                    return True
+            # Extract SNI from TLS handshake
+            sni = None
+            try:
+                if hasattr(packet.tls, 'handshake_extensions_server_name'):
+                    sni = str(packet.tls.handshake_extensions_server_name).lower()
+                elif hasattr(packet.tls, 'handshake_extension_server_name'):
+                    sni = str(packet.tls.handshake_extension_server_name).lower()
+            except:
+                pass
             
-            # Check IPv6
-            if hasattr(packet, 'ipv6'):
-                dst_ip = getattr(packet.ipv6, 'dst', None)
-                src_ip = getattr(packet.ipv6, 'src', None)
-                
-                if dst_ip in self.doh_ips or src_ip in self.doh_ips:
-                    self.debug_print(f"DoH detected by IPv6: {dst_ip or src_ip}")
-                    return True
+            # Primary detection: SNI must match known DoH providers
+            if sni:
+                for provider in self.doh_providers:
+                    if provider.lower() in sni or sni in provider.lower():
+                        self.debug_print(f"DoH detected by SNI: {sni}")
+                        return True
             
-            # Check TLS SNI
-            if 'TLS' in packet:
-                try:
-                    # Try different ways to access SNI
-                    sni = None
-                    if hasattr(packet, 'tls'):
-                        if hasattr(packet.tls, 'handshake_extensions_server_name'):
-                            sni = str(packet.tls.handshake_extensions_server_name)
-                        elif hasattr(packet.tls, 'handshake_extension_server_name'):
-                            sni = str(packet.tls.handshake_extension_server_name)
-                    
-                    if sni:
-                        sni_lower = sni.lower()
-                        # Check against loaded DoH providers
-                        for provider in self.doh_providers:
-                            if provider in sni_lower or sni_lower in provider:
-                                self.debug_print(f"DoH detected by SNI: {sni}")
-                                return True
-                except:
-                    pass
-            
-            # Check HTTP/2 for DoH paths
+            # Secondary detection: HTTP/2 with DoH paths (for already established connections)
             if hasattr(packet, 'http2'):
                 try:
-                    # Check various HTTP/2 header fields
+                    # Check various HTTP/2 header fields for DoH paths
                     for field in ['headers_path', 'header_path', 'path']:
                         if hasattr(packet.http2, field):
                             path = str(getattr(packet.http2, field))
                             if 'dns-query' in path or '/dns' in path:
-                                self.debug_print(f"DoH detected by HTTP/2 path: {path}")
-                                return True
+                                # Additional verification: check if this is to a known DoH provider IP
+                                dst_ip = None
+                                if hasattr(packet, 'ip'):
+                                    dst_ip = getattr(packet.ip, 'dst', None)
+                                elif hasattr(packet, 'ipv6'):
+                                    dst_ip = getattr(packet.ipv6, 'dst', None)
+                                
+                                # Only count if it's to a known DoH IP
+                                if dst_ip and dst_ip in self.doh_ips:
+                                    self.debug_print(f"DoH detected by HTTP/2 path to known server: {path} -> {dst_ip}")
+                                    return True
                 except:
                     pass
-                    
+            
+            # If we reach here, it's not DoH traffic we can identify
+            return False
+                        
         except Exception as e:
             self.debug_print(f"Error in DoH detection: {e}")
-            
-        return False
+            return False
     
     def is_dot_traffic(self, packet):
         """Enhanced DoT detection"""
@@ -168,24 +154,15 @@ class DNSFallbackDetectorWithLists:
             # Must be TCP on port 853
             if not ('TCP' in packet and hasattr(packet, 'tcp')):
                 return False
-                
-            dst_port = getattr(packet.tcp, 'dstport', None)
-            src_port = getattr(packet.tcp, 'srcport', None)
             
-            if dst_port == '853' or src_port == '853':
+            dst_port = getattr(packet.tcp, 'dstport', None)
+            
+            if dst_port == '853':
                 # Additional check: verify it's to/from a known DNS server
                 if hasattr(packet, 'ip'):
                     dst_ip = getattr(packet.ip, 'dst', None)
-                    src_ip = getattr(packet.ip, 'src', None)
                     
-                    # Check if it's a known DoT server
-                    if dst_ip in self.dot_ips or src_ip in self.dot_ips:
-                        self.debug_print(f"DoT detected on port 853 to known server: {dst_ip or src_ip}")
-                        return True
-                    else:
-                        self.debug_print(f"TCP port 853 traffic to unknown server: {dst_ip}")
-                        return True  # Still count it as DoT
-                        
+                self.debug_print(f"TCP port 853 traffic to server: {dst_ip}")
                 return True
                 
         except Exception as e:
@@ -205,12 +182,16 @@ class DNSFallbackDetectorWithLists:
             
             # Check for DoQ ports
             doq_ports = ['853', '784', '8853']
-            if dst_port not in doq_ports and src_port not in doq_ports:
+            if dst_port not in doq_ports:
                 return False
             
             # Get IP addresses
             dst_ip = None
             src_ip = None
+            
+            # Check for QUIC protocol indicators
+            if not hasattr(packet, 'quic'):
+                return False
             
             if hasattr(packet, 'ip'):
                 dst_ip = getattr(packet.ip, 'dst', None)
@@ -219,24 +200,8 @@ class DNSFallbackDetectorWithLists:
                 dst_ip = getattr(packet.ipv6, 'dst', None)
                 src_ip = getattr(packet.ipv6, 'src', None)
             
-            # Check if it's to/from a known DNS server
-            if dst_ip in self.doh_ips or src_ip in self.doh_ips:
-                self.debug_print(f"DoQ detected on port {dst_port or src_port} to known server: {dst_ip or src_ip}")
-                return True
-            
-            # Check for QUIC protocol indicators
-            if hasattr(packet, 'quic'):
-                self.debug_print(f"DoQ detected by QUIC protocol on port {dst_port}")
-                return True
-            
-            # Heuristic: UDP on port 853 to/from known DNS servers
-            if dst_port == '853':
-                # Additional checks for QUIC-like patterns
-                if hasattr(packet, 'data'):
-                    # QUIC packets often start with specific patterns
-                    # This is a simplified check
-                    self.debug_print(f"Potential DoQ traffic on UDP port 853 to {dst_ip}")
-                    return True
+            self.debug_print(f"DoQ detected on port {dst_port or src_port} to known server: {dst_ip or src_ip}")
+            return True
                     
         except Exception as e:
             self.debug_print(f"Error in DoQ detection: {e}")
