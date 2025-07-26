@@ -96,14 +96,16 @@ This parses the .pcapng and detects downgrade patterns:
 ```json
 [
   {
-    "timestamp": "2025-07-25 02:07:53.136",
-    "src_ip": "172.24.128.101",
-    "encrypted_type": "DoQ",
-    "encrypted_server": "8.8.8.8",
-    "plaintext_query": "www.google.com",
-    "plaintext_server": "172.24.0.1",
-    "time_to_fallback": "0.295s"
-  }
+      "timestamp": "2025-07-27 01:57:16.927",
+      "src_ip": "172.24.128.101",
+      "encrypted_type": "DoH",
+      "encrypted_server": "cloudflare-dns.com",
+      "encrypted_time": "2025-07-27 01:57:15.859",
+      "plaintext_query": "js.stripe.com",
+      "plaintext_server": "172.24.0.1",
+      "time_to_fallback": "1.068s",
+      "likely_failure": false
+    }
 ]
 ```
 
