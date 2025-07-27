@@ -30,7 +30,7 @@ This tool aims to close that visibility gap.
 - [`capture.pcapng`](Example/capture.pcapng) — Real trace with encrypted DNS and fallbacks  
 - [`capture_fallback_analysis.json`](Example/capture_fallback_analysis.json) — Example output report
 
-> ✅ Detected 37 downgrade events in a 2125-packet trace  
+> ✅ Detected 37 downgrade events in a 2090-packet trace  
 > 🔍 Included DNS providers: Cloudflare, Google, Quad9, AdGuard
 
 ---
