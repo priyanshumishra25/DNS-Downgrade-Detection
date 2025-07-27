@@ -83,7 +83,7 @@ Sends a mix of DoH, DoT, DoQ, and plaintext DNS queries for 60 seconds.
 ### 2️⃣ Analyze the Capture
 
 ```bash
-python3 improved_dns_detector.py real_test.pcapng --doh-domains doh-domains_overall.txt --doh-ipv4 doh-ipv4.txt
+python3 dns_fallback_detector.py real_test.pcapng --doh-domains doh-domains_overall.txt --doh-ipv4 doh-ipv4.txt
 ```
 This parses the .pcapng and detects downgrade patterns:
 - Secure DNS attempt (DoH/DoT/DoQ)
