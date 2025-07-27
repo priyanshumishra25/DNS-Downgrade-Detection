@@ -467,7 +467,7 @@ class DNSFallbackDetectorWithLists:
             
             # Print statistics
             print(f"\nPacket Statistics:")
-            print(f"Total packets analyzed: {self.packet_stats['total']}")
+            print(f"Filtered packets analyzed: {self.packet_stats['total']} (DNS-relevant traffic only)")
             print(f"TCP port 443 packets: {self.packet_stats['tcp_443']}")
             print(f"TCP port 853 packets: {self.packet_stats['tcp_853']}")
             print(f"UDP port 53 packets: {self.packet_stats['udp_53']}")
